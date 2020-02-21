@@ -1,6 +1,7 @@
 package com.jorgegiance.bakingapp.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.jorgegiance.bakingapp.R;
 import com.jorgegiance.bakingapp.model.Recipe;
+import com.jorgegiance.bakingapp.ui.MainActivity;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
     private Context ctx;
     private List<Recipe> recipesList;
     private final RecipeAdapterOnClickHandler mClickHandler;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
 
     /**
@@ -36,14 +39,14 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
 
     /**
      * Constructor method
-     * @param ctx Context
+     *
+     * @param ctx           Context
      * @param mClickHandler A RecipeAdapterOnClickHandler object
      */
     public RecipeRecyclerAdapter( Context ctx, RecipeAdapterOnClickHandler mClickHandler ) {
         this.ctx = ctx;
         this.mClickHandler = mClickHandler;
     }
-
 
 
     @NonNull
@@ -54,29 +57,30 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
         View recipeView = recipeInflater.inflate(R.layout.recipe_card_item, parent, false);
         RecipeHolder holder = new RecipeHolder(recipeView);
 
-//        holder.cardImage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick( View v ) {
-//                int adapterPosition = getAdapterPosition();
-//                Toast.makeText(ctx, "Position clicked = " , Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-
         return holder;
     }
 
     @Override
     public void onBindViewHolder( @NonNull RecipeHolder holder, int position ) {
 
-        holder.cardTitle.setText("Arroz con pollo");
 
-        Glide
-            .with(ctx)
-            .load("https://images-gmi-pmc.edge-generalmills.com/8b79836e-e3b4-4099-bf3b-79a21257b759.jpg")
-            .placeholder(R.mipmap.ic_launcher)
-            .centerCrop()
-            .into(holder.cardImage);
+        if (recipesList != null) {
+
+            String recipeName = recipesList.get(position).getName();
+            holder.cardTitle.setText(recipeName);
+
+
+            Glide
+                    .with(ctx)
+                    .load(recipesList.get(position).getImage())         // "https://images-gmi-pmc.edge-generalmills.com/8b79836e-e3b4-4099-bf3b-79a21257b759.jpg"
+                    .placeholder(loadRecipeImage(recipeName))
+                    .centerCrop()
+                    .into(holder.cardImage);
+
+
+        } else {
+            Log.d(TAG, "list is null");
+        }
 
     }
 
@@ -90,7 +94,38 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
     }
 
 
+    /**
+     * This method update Recipes List state
+     *
+     * @param recipes
+     */
+    public void setRecipesList( List<Recipe> recipes ) {
+        recipesList = recipes;
+        notifyDataSetChanged();
+    }
 
+
+    private int loadRecipeImage( String name ) {
+
+        switch (name) {
+
+            case "Nutella Pie":
+                return R.drawable.nutellapie;
+
+            case "Brownies":
+                return R.drawable.brownies;
+
+            case "Yellow Cake":
+                return R.drawable.yellowcake;
+
+            case "Cheesecake":
+                return R.drawable.cheesecake;
+
+            default:
+                return R.drawable.baking_placeholder;
+        }
+
+    }
 
 
     // Holder Class
@@ -116,8 +151,8 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
         }
 
 
-
-
     }
 
+
 }
+
