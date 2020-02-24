@@ -1,23 +1,21 @@
 package com.jorgegiance.bakingapp.ui;
 
-import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import com.jorgegiance.bakingapp.R;
-import com.jorgegiance.bakingapp.adapter.RecipeRecyclerAdapter;
+import com.jorgegiance.bakingapp.adapter.RecipeListAdapter;
 import com.jorgegiance.bakingapp.model.Recipe;
 import com.jorgegiance.bakingapp.util.ApiRequest;
 import com.jorgegiance.bakingapp.util.Constants;
@@ -30,18 +28,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RecipeRecyclerFragment extends Fragment implements RecipeRecyclerAdapter.RecipeAdapterOnClickHandler{
+public class RecipeListFragment extends Fragment implements RecipeListAdapter.RecipeAdapterOnClickHandler{
 
 
-    private RecipeRecyclerAdapter.RecipeAdapterOnClickHandler clickHandler;
-    private RecipeRecyclerAdapter mAdapter;
+    private RecipeListAdapter.RecipeAdapterOnClickHandler clickHandler;
+    private RecipeListAdapter mAdapter;
     private RecyclerView recycler;
     private List<Recipe> recipesList;
     private static final String TAG = MainActivity.class.getSimpleName();
 
 
     // Constructor
-    public RecipeRecyclerFragment() {
+    public RecipeListFragment() {
 
     }
 
@@ -54,7 +52,7 @@ public class RecipeRecyclerFragment extends Fragment implements RecipeRecyclerAd
 //        // This makes sure that the host activity has implemented the clickHandler interface
 //        // If not, it throws an exception
 //        try {
-//            clickHandler = (RecipeRecyclerAdapter.RecipeAdapterOnClickHandler) context;
+//            clickHandler = (RecipeListAdapter.RecipeAdapterOnClickHandler) context;
 //        } catch (ClassCastException e) {
 //            throw new ClassCastException(context.toString()
 //                    + " must implement RecipeAdapterOnClickHandler");
@@ -70,7 +68,7 @@ public class RecipeRecyclerFragment extends Fragment implements RecipeRecyclerAd
         recycler = rootView.findViewById(R.id.recipe_recycler_view);
 
         // ....setting up RecyclerView
-        mAdapter = new RecipeRecyclerAdapter(getContext(), this);
+        mAdapter = new RecipeListAdapter(getContext(), this);
         recycler.setAdapter(mAdapter);
         recycler.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns()));
         recycler.setHasFixedSize(true);
@@ -104,7 +102,11 @@ public class RecipeRecyclerFragment extends Fragment implements RecipeRecyclerAd
     public void onClick( int position ) {
 
         Toast.makeText(getContext(), "Position clicked = " + position, Toast.LENGTH_SHORT).show();
-
+      //  Context context = this;
+        Class detailActivityClass = DetailActivity.class;
+        Intent newIntent = new Intent(getContext(), detailActivityClass);
+     //  newIntent.putExtra("movie", movie);
+        startActivity(newIntent);
     }
 
 

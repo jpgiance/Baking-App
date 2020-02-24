@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Baking App</string>
     <string name="placeholder_text">Recipe title</string>
+    <string name="ingredients_title">Ingredients</string>
+    <string name="steps_title">Instructions</string>
+    <string name="recipe_step">Step number </string>
+    <string name="ingredients_placeholder"> 1- Ingredient number 1 \n
+                                            2- Ingredient number 2 \n
+                                            3- Ingredient number 3 \n
+                                            4- Ingredient number 4 \n
+                                            5- Ingredient number 5</string>
 </resources>

@@ -1,36 +1,27 @@
 package com.jorgegiance.bakingapp.ui;
-import com.jorgegiance.bakingapp.R;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 
+import com.jorgegiance.bakingapp.R;
 
-
-
-
-public class MainActivity extends AppCompatActivity  {
-
-
-
-
+public class DetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
+
 
         if (savedInstanceState == null){
 
-            RecipeListFragment recipeFragment = new RecipeListFragment();
+            RecipeDescriptionFragment recipeDescriptionFragment = new RecipeDescriptionFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
-                    .add(R.id.recipe_recycler_container, recipeFragment)
+                    .add(R.id.recipe_description_container, recipeDescriptionFragment)
                     .commit();
         }
-
     }
-
-
 }

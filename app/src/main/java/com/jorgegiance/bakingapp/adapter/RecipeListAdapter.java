@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +18,7 @@ import com.jorgegiance.bakingapp.ui.MainActivity;
 
 import java.util.List;
 
-public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAdapter.RecipeHolder> {
+public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.RecipeHolder> {
 
 
     private Context ctx;
@@ -43,7 +42,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
      * @param ctx           Context
      * @param mClickHandler A RecipeAdapterOnClickHandler object
      */
-    public RecipeRecyclerAdapter( Context ctx, RecipeAdapterOnClickHandler mClickHandler ) {
+    public RecipeListAdapter( Context ctx, RecipeAdapterOnClickHandler mClickHandler ) {
         this.ctx = ctx;
         this.mClickHandler = mClickHandler;
     }
@@ -54,7 +53,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecipeRecyclerAd
     public RecipeHolder onCreateViewHolder( @NonNull ViewGroup parent, int viewType ) {
 
         LayoutInflater recipeInflater = LayoutInflater.from(ctx);
-        View recipeView = recipeInflater.inflate(R.layout.recipe_card_item, parent, false);
+        View recipeView = recipeInflater.inflate(R.layout.recipe_list_item, parent, false);
         RecipeHolder holder = new RecipeHolder(recipeView);
 
         return holder;
