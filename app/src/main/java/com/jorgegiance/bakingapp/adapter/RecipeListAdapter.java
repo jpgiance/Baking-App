@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.jorgegiance.bakingapp.R;
 import com.jorgegiance.bakingapp.model.Recipe;
 import com.jorgegiance.bakingapp.ui.MainActivity;
+import com.jorgegiance.bakingapp.util.Constants;
 
 import java.util.List;
 
@@ -31,8 +33,8 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
      * This interface allows ...
      */
     public interface RecipeAdapterOnClickHandler {
-        //void onClick( Recipe recipe );
-        void onClick( int position );
+        void onClick( Recipe recipe );
+        //void onClick( int position );
     }
 
 
@@ -72,7 +74,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             Glide
                     .with(ctx)
                     .load(recipesList.get(position).getImage())         // "https://images-gmi-pmc.edge-generalmills.com/8b79836e-e3b4-4099-bf3b-79a21257b759.jpg"
-                    .placeholder(loadRecipeImage(recipeName))
+                    .placeholder(Constants.loadRecipeImage(recipeName))
                     .centerCrop()
                     .into(holder.cardImage);
 
@@ -104,27 +106,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
     }
 
 
-    private int loadRecipeImage( String name ) {
 
-        switch (name) {
-
-            case "Nutella Pie":
-                return R.drawable.nutellapie;
-
-            case "Brownies":
-                return R.drawable.brownies;
-
-            case "Yellow Cake":
-                return R.drawable.yellowcake;
-
-            case "Cheesecake":
-                return R.drawable.cheesecake;
-
-            default:
-                return R.drawable.baking_placeholder;
-        }
-
-    }
 
 
     // Holder Class
@@ -140,11 +122,17 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Re
             cardImage = itemView.findViewById(R.id.card_recipe_image);
             cardTitle = itemView.findViewById(R.id.card_recipe_name);
 
-            cardImage.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick( View v ) {
                     int adapterPosition = getAdapterPosition();
-                    mClickHandler.onClick(adapterPosition);
+
+                    if (recipesList != null){
+                        mClickHandler.onClick(recipesList.get(adapterPosition));
+                    }else{
+                        Toast.makeText(ctx, "Recipe is not available" , Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             });
         }

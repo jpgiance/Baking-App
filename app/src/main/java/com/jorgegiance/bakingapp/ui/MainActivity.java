@@ -13,7 +13,7 @@ import android.os.Bundle;
 public class MainActivity extends AppCompatActivity  {
 
 
-
+    RecipeListFragment recipeFragment;
 
 
     @Override
@@ -21,9 +21,10 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         if (savedInstanceState == null){
 
-            RecipeListFragment recipeFragment = new RecipeListFragment();
+            recipeFragment = new RecipeListFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .add(R.id.recipe_recycler_container, recipeFragment)

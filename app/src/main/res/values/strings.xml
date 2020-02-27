@@ -4,9 +4,8 @@
     <string name="ingredients_title">Ingredients</string>
     <string name="steps_title">Instructions</string>
     <string name="recipe_step">Step number </string>
-    <string name="ingredients_placeholder"> 1- Ingredient number 1 \n
-                                            2- Ingredient number 2 \n
-                                            3- Ingredient number 3 \n
-                                            4- Ingredient number 4 \n
-                                            5- Ingredient number 5</string>
+    <string name="player_description">This media player displays a short video for the current recipe step</string>
+    <string name="forward_button_description">This button move to the next recipe step</string>
+    <string name="backward_button_description">This button move to the previous recipe step</string>
+    <string name="ingredients_description"> Recipe image</string>
 </resources>

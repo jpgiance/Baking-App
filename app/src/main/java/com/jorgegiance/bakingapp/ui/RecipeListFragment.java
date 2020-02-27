@@ -1,5 +1,7 @@
 package com.jorgegiance.bakingapp.ui;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -9,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
 import com.jorgegiance.bakingapp.R;
@@ -20,6 +25,7 @@ import com.jorgegiance.bakingapp.model.Recipe;
 import com.jorgegiance.bakingapp.util.ApiRequest;
 import com.jorgegiance.bakingapp.util.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,13 +34,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RecipeListFragment extends Fragment implements RecipeListAdapter.RecipeAdapterOnClickHandler{
+public class RecipeListFragment extends Fragment implements RecipeListAdapter.RecipeAdapterOnClickHandler, SwipeRefreshLayout.OnRefreshListener{
 
 
+    private Context ctx;
     private RecipeListAdapter.RecipeAdapterOnClickHandler clickHandler;
     private RecipeListAdapter mAdapter;
     private RecyclerView recycler;
-    private List<Recipe> recipesList;
+    private ArrayList<Recipe> recipesList;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = MainActivity.class.getSimpleName();
 
 
@@ -44,36 +52,34 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     }
 
 
-//    // Override onAttach to make sure that the container activity has implemented the clickHandler
-//    @Override
-//    public void onAttach( Context context) {
-//        super.onAttach(context);
-//
-//        // This makes sure that the host activity has implemented the clickHandler interface
-//        // If not, it throws an exception
-//        try {
-//            clickHandler = (RecipeListAdapter.RecipeAdapterOnClickHandler) context;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(context.toString()
-//                    + " must implement RecipeAdapterOnClickHandler");
-//        }
-//    }
-
-
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_recipe_recycler, container, false);
+
+
+        final View rootView = inflater.inflate(R.layout.fragment_recipe_list, container, false);
         recycler = rootView.findViewById(R.id.recipe_recycler_view);
 
         // ....setting up RecyclerView
-        mAdapter = new RecipeListAdapter(getContext(), this);
+        mAdapter = new RecipeListAdapter(ctx, this);
         recycler.setAdapter(mAdapter);
-        recycler.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns()));
+        recycler.setLayoutManager(new GridLayoutManager(ctx, numberOfColumns()));
         recycler.setHasFixedSize(true);
 
-        loadRecipes();
+        // ....setting up the swipe refresh action
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(Constants.recipeKey)){
+            recipesList = savedInstanceState.getParcelableArrayList(Constants.recipeKey);
+            mAdapter.setRecipesList(recipesList);
+        }else {
+
+            loadRecipes();
+        }
+
 
         // Return the root view
         return rootView;
@@ -99,16 +105,31 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
 
 
     @Override
-    public void onClick( int position ) {
+    public void onClick(Recipe recipe ) {
 
-        Toast.makeText(getContext(), "Position clicked = " + position, Toast.LENGTH_SHORT).show();
-      //  Context context = this;
+
         Class detailActivityClass = DetailActivity.class;
-        Intent newIntent = new Intent(getContext(), detailActivityClass);
-     //  newIntent.putExtra("movie", movie);
+        Intent newIntent = new Intent(ctx, detailActivityClass);
+        newIntent.putExtra(Constants.recipeKey, recipe);
         startActivity(newIntent);
     }
 
+
+    @Override
+    public void onAttach( Context context ) {
+        super.onAttach(context);
+        ctx = context;
+    }
+
+
+    @Override
+    public void onSaveInstanceState( @NonNull Bundle outState ) {
+        if (recipesList != null){
+            outState.putParcelableArrayList(Constants.recipeKey, recipesList);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
 
     private void loadRecipes(){
 
@@ -130,12 +151,15 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
                 if (!response.isSuccessful()){
 
                     Log.d(TAG, "API response unsuccessful");
+                    swipeRefreshLayout.setRefreshing(false);
 
                 }else {
 
-                    recipesList = response.body();
+                    recipesList = (ArrayList<Recipe>) response.body();
                     mAdapter.setRecipesList(recipesList);
                     Log.d(TAG, "list is not null " + recipesList.get(1).getIngredients().get(1).getIngredient());
+                    swipeRefreshLayout.setRefreshing(false);
+
 
                 }
 
@@ -145,9 +169,22 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
             public void onFailure( Call<List<Recipe>> call, Throwable t ) {
 
                 Log.d(TAG, "API response Failure" + t.getMessage());
+                swipeRefreshLayout.setRefreshing(false);
+
+
+                new AlertDialog.Builder(ctx)
+                        .setTitle("No internet connection")
+                        .setMessage("Please swipe to refresh")
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
             }
         });
 
     }
 
+    @Override
+    public void onRefresh() {
+        loadRecipes();
+    }
 }

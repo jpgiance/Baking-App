@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +17,7 @@ import com.jorgegiance.bakingapp.ui.MainActivity;
 
 import java.util.List;
 
-public class StepsInstructionsAdapter extends RecyclerView.Adapter<StepsInstructionsAdapter.InstructionsHolder> {
+public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.InstructionsHolder> {
 
 
 
@@ -32,7 +31,7 @@ public class StepsInstructionsAdapter extends RecyclerView.Adapter<StepsInstruct
      * This interface allows ...
      */
     public interface InstructionAdapterOnClickHandler {
-        //void onClick( Recipe recipe );
+
         void onClick( int position );
     }
 
@@ -43,7 +42,7 @@ public class StepsInstructionsAdapter extends RecyclerView.Adapter<StepsInstruct
      * @param ctx           Context
      * @param mClickHandler A RecipeAdapterOnClickHandler object
      */
-    public StepsInstructionsAdapter( Context ctx, InstructionAdapterOnClickHandler mClickHandler ) {
+    public StepsListAdapter( Context ctx, InstructionAdapterOnClickHandler mClickHandler ) {
         this.ctx = ctx;
         this.mClickHandler = mClickHandler;
     }
@@ -80,17 +79,28 @@ public class StepsInstructionsAdapter extends RecyclerView.Adapter<StepsInstruct
     @Override
     public int getItemCount() {
         if (null == stepsList) {
-            return 10;
+            return 20;
         }
         return stepsList.size();
 
     }
 
 
+    /**
+     * This method update Steps List state
+     *
+     * @param steps
+     */
+    public void setStepsList( List<Step> steps ) {
+        stepsList = steps;
+        notifyDataSetChanged();
+    }
+
+
 
     // Holder Class
 
-    public class InstructionsHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class InstructionsHolder extends RecyclerView.ViewHolder {
 
         TextView stepInstruction;
 
@@ -99,13 +109,15 @@ public class StepsInstructionsAdapter extends RecyclerView.Adapter<StepsInstruct
 
             stepInstruction = itemView.findViewById(R.id.step);
 
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick( View v ) {
+                    mClickHandler.onClick(getAdapterPosition());
+                }
+            });
+
+
         }
 
-
-        @Override
-        public void onClick( View v ) {
-            Toast.makeText(ctx, "Position clicked = " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
-
-        }
     }
 }
