@@ -35,7 +35,7 @@ public class RecipeDescriptionFragment extends Fragment implements StepsListAdap
     private IngredientsListAdapter ingredientsAdapter;
     private RecyclerView stepsRecycler;
     private RecyclerView ingredientsRecycler;
-    private TextView ingredientsTextView;
+    private TextView servings;
     private ImageView recipeImage;
     private Recipe detailRecipe;
     private Bundle recipeBundle;
@@ -69,8 +69,9 @@ public class RecipeDescriptionFragment extends Fragment implements StepsListAdap
         stepsRecycler = rootView.findViewById(R.id.recipe_description_recycler);
         ingredientsRecycler = rootView.findViewById(R.id.recipe_ingredients_recycler);
         recipeImage = rootView.findViewById(R.id.recipe_image);
+        servings = rootView.findViewById(R.id.recipe_servings);
 
-
+        servings.setText("Servings: " + detailRecipe.getServings());
         Glide
                 .with(ctx)
                 .load( detailRecipe.getImage())

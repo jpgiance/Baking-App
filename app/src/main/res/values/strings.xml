@@ -8,4 +8,5 @@
     <string name="forward_button_description">This button move to the next recipe step</string>
     <string name="backward_button_description">This button move to the previous recipe step</string>
     <string name="ingredients_description"> Recipe image</string>
+    <string name="widget_ingredients_placeholder">Press to select recipe.</string>
 </resources>

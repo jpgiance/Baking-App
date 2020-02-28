@@ -1,5 +1,7 @@
 package com.jorgegiance.bakingapp.ui;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,6 +46,7 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     private ArrayList<Recipe> recipesList;
     private SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = MainActivity.class.getSimpleName();
+    boolean isFromWidget;
 
 
     // Constructor
@@ -56,11 +59,10 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState) {
 
-
-
         final View rootView = inflater.inflate(R.layout.fragment_recipe_list, container, false);
         recycler = rootView.findViewById(R.id.recipe_recycler_view);
 
+        isFromWidget = false;
         // ....setting up RecyclerView
         mAdapter = new RecipeListAdapter(ctx, this);
         recycler.setAdapter(mAdapter);
@@ -76,6 +78,10 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
             recipesList = savedInstanceState.getParcelableArrayList(Constants.recipeKey);
             mAdapter.setRecipesList(recipesList);
         }else {
+
+            if (getArguments() != null){
+                isFromWidget = getArguments().getBoolean(Constants.widgetKey);
+            }
 
             loadRecipes();
         }
@@ -108,10 +114,20 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     public void onClick(Recipe recipe ) {
 
 
-        Class detailActivityClass = DetailActivity.class;
-        Intent newIntent = new Intent(ctx, detailActivityClass);
-        newIntent.putExtra(Constants.recipeKey, recipe);
-        startActivity(newIntent);
+        if (isFromWidget){
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(ctx);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(ctx, RecipeWidget.class));
+
+            RecipeWidget.updateRecipeWidget(ctx, appWidgetManager, recipe, appWidgetIds);
+            //getActivity().finish();
+            getActivity().onBackPressed();
+        }else {
+            Class detailActivityClass = DetailActivity.class;
+            Intent newIntent = new Intent(ctx, detailActivityClass);
+            newIntent.putExtra(Constants.recipeKey, recipe);
+            startActivity(newIntent);
+        }
+
     }
 
 

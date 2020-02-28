@@ -9,6 +9,7 @@ public class Constants {
     public static final String positionKey = "position";
     public static final String isTwoPaneKey = "isTwoPane";
     public static final String userAgentKey = "iexoplayer-bakingApp";
+    public static final String widgetKey = "fromWidget";
 
 
     public Constants() {

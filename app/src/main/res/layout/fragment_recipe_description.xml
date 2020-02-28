@@ -47,6 +47,16 @@
                             android:padding="10dp"
                             android:textSize="24sp"/>
 
+                        <TextView
+                            android:id="@+id/recipe_servings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="normal"
+                            android:layout_gravity="center"
+                            android:paddingBottom="15dp"
+                            android:textSize="18sp"
+                            tools:text="Servings: 8"/>
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recipe_ingredients_recycler"
                             android:layout_width="match_parent"
