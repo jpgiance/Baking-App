@@ -140,7 +140,10 @@ public class RecipeMediaFragment extends Fragment {
         });
 
 
-        setVisibilityForMediaView();
+        if (detailRecipe != null){
+            setVisibilityForMediaView();
+        }
+
 
         return rootView;
     }

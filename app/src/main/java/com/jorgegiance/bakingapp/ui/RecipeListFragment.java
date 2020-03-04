@@ -3,7 +3,6 @@ package com.jorgegiance.bakingapp.ui;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -26,6 +24,7 @@ import com.jorgegiance.bakingapp.adapter.RecipeListAdapter;
 import com.jorgegiance.bakingapp.model.Recipe;
 import com.jorgegiance.bakingapp.util.ApiRequest;
 import com.jorgegiance.bakingapp.util.Constants;
+import com.jorgegiance.bakingapp.util.SimpleIdlingResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +46,8 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     private SwipeRefreshLayout swipeRefreshLayout;
     private static final String TAG = MainActivity.class.getSimpleName();
     boolean isFromWidget;
+    SimpleIdlingResource idlingResource;
+    MainActivity parentActivity;
 
 
     // Constructor
@@ -119,8 +120,8 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(ctx, RecipeWidget.class));
 
             RecipeWidget.updateRecipeWidget(ctx, appWidgetManager, recipe, appWidgetIds);
-            //getActivity().finish();
-            getActivity().onBackPressed();
+            getActivity().finishAffinity();
+
         }else {
             Class detailActivityClass = DetailActivity.class;
             Intent newIntent = new Intent(ctx, detailActivityClass);
@@ -135,6 +136,8 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     public void onAttach( Context context ) {
         super.onAttach(context);
         ctx = context;
+        parentActivity = (MainActivity) getActivity();
+        idlingResource = (SimpleIdlingResource) parentActivity.getIdlingResource();
     }
 
 
@@ -148,6 +151,11 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
     }
 
     private void loadRecipes(){
+
+        // The IdlingResource is null in production.
+        if (idlingResource != null) {
+            idlingResource.setIdleState(false);
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.getApiRecipeBaseUrl())
@@ -166,10 +174,17 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
 
                 if (!response.isSuccessful()){
 
+
+
                     Log.d(TAG, "API response unsuccessful");
                     swipeRefreshLayout.setRefreshing(false);
 
+
                 }else {
+
+                    if (idlingResource != null) {
+                        idlingResource.setIdleState(true);
+                    }
 
                     recipesList = (ArrayList<Recipe>) response.body();
                     mAdapter.setRecipesList(recipesList);
@@ -183,6 +198,10 @@ public class RecipeListFragment extends Fragment implements RecipeListAdapter.Re
 
             @Override
             public void onFailure( Call<List<Recipe>> call, Throwable t ) {
+
+                if (idlingResource != null) {
+                    idlingResource.setIdleState(true);
+                }
 
                 Log.d(TAG, "API response Failure" + t.getMessage());
                 swipeRefreshLayout.setRefreshing(false);
