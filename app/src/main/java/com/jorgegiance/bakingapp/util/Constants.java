@@ -8,8 +8,10 @@ public class Constants {
     public static final String recipeKey = "recipeBundle";
     public static final String positionKey = "position";
     public static final String isTwoPaneKey = "isTwoPane";
-    public static final String userAgentKey = "iexoplayer-bakingApp";
-    public static final String widgetKey = "fromWidget";
+    public static final String userAgentKey = "exoplayer_bakingApp";
+    public static final String widgetKey = "from_widget";
+    public static final String playbackPositionKey = "playback_position";
+    public static final String playerStateKey = "player_state";
 
 
     public Constants() {

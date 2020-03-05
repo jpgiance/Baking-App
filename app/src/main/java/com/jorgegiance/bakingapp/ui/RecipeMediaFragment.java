@@ -75,7 +75,7 @@ public class RecipeMediaFragment extends Fragment {
         backwardButton = rootView.findViewById(R.id.icon_backward);
         stepDescription = rootView.findViewById(R.id.step_description);
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.positionKey)){
+        if (savedInstanceState == null ){
 
 
             if (getArguments() != null){
@@ -87,7 +87,12 @@ public class RecipeMediaFragment extends Fragment {
                 imageURL = detailRecipe.getImage();
 
             }
-        }else {
+        }else if (savedInstanceState.containsKey(Constants.positionKey)){
+
+            if (savedInstanceState.containsKey(Constants.playbackPositionKey) || savedInstanceState.containsKey(Constants.playerStateKey)){
+                playbackPosition = savedInstanceState.getLong(Constants.playbackPositionKey);
+                playWhenReady = savedInstanceState.getBoolean(Constants.playerStateKey);
+            }
 
             if (getArguments() != null){
                 detailRecipe = getArguments().getParcelable(Constants.recipeKey);
@@ -112,6 +117,8 @@ public class RecipeMediaFragment extends Fragment {
                 stepPosition++;
                 releasePlayer();
                 updateCurrentStep();
+                playWhenReady = true;
+                playbackPosition = 0;
                 setVisibilityForMediaView();
             }
 
@@ -128,6 +135,8 @@ public class RecipeMediaFragment extends Fragment {
                 stepPosition--;
                 releasePlayer();
                 updateCurrentStep();
+                playWhenReady = true;
+                playbackPosition = 0;
                 setVisibilityForMediaView();
             }
 
@@ -206,6 +215,12 @@ public class RecipeMediaFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState( @NonNull Bundle outState ) {
+
+
+        outState.putLong(Constants.playbackPositionKey, playbackPosition);
+        outState.putBoolean(Constants.playerStateKey, playWhenReady);
+
+
         outState.putInt(Constants.positionKey, stepPosition);
         super.onSaveInstanceState(outState);
     }
@@ -221,7 +236,7 @@ public class RecipeMediaFragment extends Fragment {
             MediaSource mediaSource = buildMediaSource(uri);
 
             mediaPlayer.setPlayWhenReady(playWhenReady);
-         //   mediaPlayer.seekTo(currentWindow, playbackPosition);
+            mediaPlayer.seekTo(currentWindow, playbackPosition);
             mediaPlayer.prepare(mediaSource, false, false);
 
             mediaPlayer.addListener(playbackStateListener);
